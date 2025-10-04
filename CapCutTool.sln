@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35806.99 d17.13
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CapCutTool.UI", "CapCutTool.UI\CapCutTool.UI.csproj", "{4D421138-3FDC-4F64-A8A7-2E6F13D7DBF6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CapCutTool.Service", "CapCutTool.Service\CapCutTool.Service.csproj", "{43E86CD7-987F-4BFF-9CFF-2462D4E14FB3}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4D421138-3FDC-4F64-A8A7-2E6F13D7DBF6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4D421138-3FDC-4F64-A8A7-2E6F13D7DBF6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4D421138-3FDC-4F64-A8A7-2E6F13D7DBF6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4D421138-3FDC-4F64-A8A7-2E6F13D7DBF6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{43E86CD7-987F-4BFF-9CFF-2462D4E14FB3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{43E86CD7-987F-4BFF-9CFF-2462D4E14FB3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{43E86CD7-987F-4BFF-9CFF-2462D4E14FB3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{43E86CD7-987F-4BFF-9CFF-2462D4E14FB3}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {202483CA-1FE8-4A95-B995-873A93F6170C}
+	EndGlobalSection
+EndGlobal
