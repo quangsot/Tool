@@ -31,7 +31,7 @@ public partial class App : Application
         services.AddTransient<MainViewModel>();
 
         // Init Service
-        services.AddTransient<IPersonService, PersonService>();
+        services.AddTransient<IDraftService, DraftService>();
 
         return services.BuildServiceProvider();
     }

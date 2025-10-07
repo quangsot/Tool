@@ -11,34 +11,40 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-
-        <TextBlock Grid.Row="0"
-               Width="200" Height="32"
-               Text="{Binding NamePerson}"
-               Padding="5"/>
-
-        <TextBlock Grid.Row="1"
-               Width="200" Height="32"
-               Text="{Binding Age}"
-               Padding="5"/>
-        <Button Grid.Row="2" Command="{Binding UpdateCommand}" Width="120" Height="32" >
-            <Button.Content>
-                Click me!
-            </Button.Content>
-            <Button.Template>
-                <ControlTemplate TargetType="Button">
-                    <Border CornerRadius="8"
-                    Background="{TemplateBinding Background}"
-                    BorderBrush="{TemplateBinding BorderBrush}"
-                    BorderThickness="{TemplateBinding BorderThickness}">
-                        <ContentPresenter HorizontalAlignment="Center"
-                                  VerticalAlignment="Center"
-                                  RecognizesAccessKey="True"/>
-                    </Border>
-                </ControlTemplate>
-            </Button.Template>
-        </Button>
+        <StackPanel Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Button  Command="{Binding ClickAnimationCommand}" Width="Auto" Height="32" >
+                <Button.Content>
+                    Chèn Animation
+                </Button.Content>
+            </Button>
+            <TextBlock Width="auto" Height="32" Text="{Binding StatusAnimation}" Padding="5"/>
+        </StackPanel>
+        <StackPanel Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Button Command="{Binding ClickEffectCommand}" Width="Auto" Height="32" >
+                <Button.Content>
+                    Chèn Effect
+                </Button.Content>
+            </Button>
+            <TextBlock Width="auto" Height="32" Text="{Binding StatusEffect}" Padding="5"/>
+        </StackPanel>
+        <StackPanel Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Button Command="{Binding ClickTransitionCommand}" Width="Auto" Height="32" >
+                <Button.Content>
+                    Chèn Transition
+                </Button.Content>
+            </Button>
+            <TextBlock Width="auto" Height="32" Text="{Binding StatusTransition}" Padding="5"/>
+        </StackPanel>
+        <StackPanel Grid.Row="3" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Button Grid.Row="2" Command="{Binding ClickSyncVoidCommand}" Width="Auto" Height="32" >
+                <Button.Content>
+                    Đồng Bộ Âm Thanh
+                </Button.Content>
+            </Button>
+            <TextBlock Grid.Row="0" Width="auto" Height="32" Text="{Binding StatusSyncVoice}" Padding="5"/>
+        </StackPanel>
     </Grid>
 
 </Window>

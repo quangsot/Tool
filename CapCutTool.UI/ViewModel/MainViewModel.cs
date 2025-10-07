@@ -5,23 +5,61 @@ namespace CapCutTool.UI.ViewModel
 {
     public partial class MainViewModel : ObservableObject
     {
-        private readonly IPersonService _personService;
+        private readonly IDraftService _draftService;
 
         [ObservableProperty]
-        private string namePerson = string.Empty;
+        private string statusAnimation = string.Empty;
 
         [ObservableProperty]
-        private int age;
+        private string statusEffect = string.Empty;
 
-        public MainViewModel(IPersonService personService)
+        [ObservableProperty]
+        private string statusTransition = string.Empty;
+
+        [ObservableProperty]
+        private string statusSyncVoice = string.Empty;
+
+        public MainViewModel(IDraftService draftService)
         {
-            _personService = personService;
+            _draftService = draftService;
         }
 
         [RelayCommand]
-        public void Update()
+        public void ClickAnimation()
         {
-            (NamePerson, Age) = _personService.GetInfo();
+            if (_draftService.InsertAnimation())
+            {
+                StatusAnimation = "Chèn Animation Thành Công";
+            }
+            else
+            {
+                StatusAnimation = "Chèn Animation Thất Bại";
+            }
+        }
+
+        [RelayCommand]
+        public void ClickEffect()
+        {
+            if (_draftService.InsertEffect())
+            {
+                StatusEffect = "Chèn Effect Thành Công";
+            }
+            else
+            {
+                StatusEffect = "Chèn Effect Thất Bại";
+            }
+        }
+
+        [RelayCommand]
+        public void ClickTransition()
+        {
+            StatusTransition = "Chèn Transition Thành Công";
+        }
+
+        [RelayCommand]
+        public void ClickSyncVoid()
+        {
+            StatusSyncVoice = "Đồng Bộ Âm Thanh Thành Công";
         }
     }
 }
