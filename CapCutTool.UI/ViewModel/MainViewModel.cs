@@ -1,6 +1,7 @@
 ﻿using CapCutTool.Service;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using System.Threading.Tasks;
 namespace CapCutTool.UI.ViewModel
 {
     public partial class MainViewModel : ObservableObject
@@ -25,9 +26,9 @@ namespace CapCutTool.UI.ViewModel
         }
 
         [RelayCommand]
-        public void ClickAnimation()
+        public async Task ClickAnimation()
         {
-            if (_draftService.InsertAnimation())
+            if (await _draftService.InsertAnimation())
             {
                 StatusAnimation = "Chèn Animation Thành Công";
             }
@@ -38,9 +39,9 @@ namespace CapCutTool.UI.ViewModel
         }
 
         [RelayCommand]
-        public void ClickEffect()
+        public async Task ClickEffect()
         {
-            if (_draftService.InsertEffect())
+            if (await _draftService.InsertEffect())
             {
                 StatusEffect = "Chèn Effect Thành Công";
             }

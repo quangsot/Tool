@@ -1,102 +1,135 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using CapCutTool.Core;
+using Newtonsoft.Json.Linq;
 using System.Net.WebSockets;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Threading.Tasks;
+using static CapCutTool.Core.Model.Materials;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace CapCutTool.Service
 {
     public interface IDraftService
     {
-        bool InsertAnimation();
-        bool InsertEffect();
+        Task<bool> InsertAnimation();
+        Task<bool> InsertEffect();
     }
     public class DraftService : IDraftService
     {
         const string projectName = "clip_test";
-        public bool InsertAnimation()
+
+        public async Task<bool> InsertAnimation()
         {
-            try
+            const string projectFilePath = "C:\\Users\\ADMIN\\AppData\\Local\\CapCut\\User Data\\Projects\\com.lveditor.draft\\";
+            string jsonFilePath = Path.Combine(projectFilePath, "clip_test_1");
+            //Set current directory to the folder of CapCut project, for example: %userprofile%\AppData\Local\CapCut\User Data\Projects\com.lveditor.draft\Test
+            var ctx = new Context(jsonFilePath);
+            var project = await ctx.GetProjectAsync();
+
+            var options = new JsonSerializerOptions
             {
-                var root = CommonUtil.GetJsonContent(projectName);
+                PropertyNameCaseInsensitive = true // Để tự động map kể cả khi JSON viết kiểu snake_case
+            };
 
-                var segments = (JArray?)root.SelectToken("tracks[0].segments") ?? [];
-                var materialAnimations = (JArray?)root.SelectToken("materials.material_animations");
-                materialAnimations?.Clear();
+            project.Materials.MaterialAnimations.RemoveAt(0);
 
-                List<string> listAnimation = Data.Animations;
-                int animationIndex = 0;
-                foreach (var segment in segments)
-                {
-                    if (animationIndex == listAnimation.Count) animationIndex = 0;
-                    while (animationIndex < listAnimation.Count)
-                    {
-                        var newAnimation = JObject.Parse(listAnimation[animationIndex]);
-                        materialAnimations?.Add(newAnimation);
+            //var animation = JsonSerializer.Deserialize<MaterialAnimation>(Data.Animations[1], options);
 
-                        var materialRef = (JArray?)segment.SelectToken("extra_material_refs");
-                        materialRef?.Add(newAnimation["id"]);
+            //if (animation != null)
+            //{
+            //    project.Materials.MaterialAnimations.Add(animation);
+            //}
 
-                        animationIndex++;
-                        break;
-                    }
-                }
-
-                CommonUtil.SaveJsonContent(root, projectName);
-                return true;
-            
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-            
+            await ctx.SaveChangesAsync();
+            return true;
         }
 
-        public bool InsertEffect()
+        //public async Task<bool> InsertAnimation()
+        //{
+        //    try
+        //    {
+        //        var root = await CommonUtil.GetJsonContent(projectName);
+
+        //        var segments = (JArray?)root.SelectToken("tracks[0].segments") ?? [];
+        //        var materialAnimations = (JArray?)root.SelectToken("materials.material_animations");
+        //        materialAnimations?.Clear();
+
+        //        List<string> listAnimation = Data.Animations;
+        //        int animationIndex = 0;
+        //        foreach (var segment in segments)
+        //        {
+        //            if (animationIndex == listAnimation.Count) animationIndex = 0;
+        //            while (animationIndex < listAnimation.Count)
+        //            {
+        //                var newAnimation = JObject.Parse(listAnimation[animationIndex]);
+        //                materialAnimations?.Add(newAnimation);
+
+        //                var materialRef = (JArray?)segment.SelectToken("extra_material_refs");
+        //                materialRef?.Add(newAnimation["id"]);
+
+        //                animationIndex++;
+        //                break;
+        //            }
+        //        }
+
+        //        CommonUtil.SaveJsonContent(root, projectName);
+        //        return true;
+
+        //    }
+        //    catch (Exception)
+        //    {
+        //        return false;
+        //    }
+
+        //}
+
+        public async Task<bool> InsertEffect()
         {
-            try
-            {
-                var root = CommonUtil.GetJsonContent(projectName);
+            return await Task.FromResult(true);
+            //try
+            //{
+            //    var root = await CommonUtil.GetJsonContent(projectName);
 
-                // 1.Clear Effects list
-                CommonUtil.ClearEffectList(root);
+            //    // 1.Clear Effects list
+            //    CommonUtil.ClearEffectList(root);
 
-                // 2. Create Effects Segment
-                var effects = Data.Effects;
-                // Get list video
-                var videos = CommonUtil.GetVideoSegments(root);
+            //    // 2. Create Effects Segment
+            //    var effects = Data.Effects;
 
-                foreach (var video in videos)
-                {
-                    // create effect
-                    var effectSegment = new EffectSegment()
-                    {
-                        Target = new TimeRange()
-                        {
-                            Start = video.Target.Start
-                        }
-                    };
+            //    // add effect to material
+            //    CommonUtil.AddEffectToMaterial(root, effects);
 
-                    int effectIndex = videos.Count / effects.Count;
-                    var effectSegmentObject = effectSegment.GenerateEffect(effects[effectIndex]);
+            //    // Get list video
+            //    var videos = CommonUtil.GetVideoSegments(root);
 
-                    // add effect to material
-                    CommonUtil.AddEffectToMaterial(root, JObject.Parse(effects[effectIndex]));
+            //    foreach (var video in videos)
+            //    {
+            //        // create effect
+            //        var effectSegment = new EffectSegment()
+            //        {
+            //            Target = new TimeRange()
+            //            {
+            //                Start = video.Target.Start
+            //            }
+            //        };
 
-                    // add effectSegment to track effect
-                    CommonUtil.AddEffectToSegment(root, effectSegmentObject);
-                }
+            //        int effectIndex = videos.IndexOf(video) % effects.Count;
+            //        var effectSegmentObject = effectSegment.GenerateEffect(effects[effectIndex]);
 
-                // 3. Save
-                CommonUtil.SaveJsonContent(root, projectName);
+            //        // add effectSegment to track effect
+            //        CommonUtil.AddEffectToSegment(root, effectSegmentObject);
+            //    }
 
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-            
+            //    // 3. Save
+            //    CommonUtil.SaveJsonContent(root, projectName);
+
+            //    return true;
+            //}
+            //catch (Exception)
+            //{
+            //    return false;
+            //}
+
         }
     }
-
 }
