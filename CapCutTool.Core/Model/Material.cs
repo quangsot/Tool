@@ -19,6 +19,9 @@ namespace CapCutTool.Core.Model
 
         public class MaterialAnimation : Base
         {
+            [JsonPropertyName("id")]
+            public new Guid Id { get; set; }
+
             [JsonPropertyName("animations")]
             public List<Animation> Animations { get; set; }
 

@@ -1,4 +1,5 @@
 ﻿using CapCutTool.Core;
+using CapCutTool.Core.Model;
 using Newtonsoft.Json.Linq;
 using System.Net.WebSockets;
 using System.Text.Json;
@@ -11,36 +12,81 @@ namespace CapCutTool.Service
 {
     public interface IDraftService
     {
-        Task<bool> InsertAnimation();
+        Task<bool> GetContext(string projectName);
+        Task<bool> InsertAnimation(List<MaterialAnimation> animations, int randomNum, float timeAnimation);
         Task<bool> InsertEffect();
     }
     public class DraftService : IDraftService
     {
         const string projectName = "clip_test";
-
-        public async Task<bool> InsertAnimation()
+        const string projectFilePath = "C:\\Users\\ADMIN\\AppData\\Local\\CapCut\\User Data\\Projects\\com.lveditor.draft\\";
+        public Context Ctx { get; private set; }
+        public Project Proj { get; private set; }
+        public DraftService()
         {
-            const string projectFilePath = "C:\\Users\\ADMIN\\AppData\\Local\\CapCut\\User Data\\Projects\\com.lveditor.draft\\";
-            string jsonFilePath = Path.Combine(projectFilePath, "clip_test_1");
-            //Set current directory to the folder of CapCut project, for example: %userprofile%\AppData\Local\CapCut\User Data\Projects\com.lveditor.draft\Test
-            var ctx = new Context(jsonFilePath);
-            var project = await ctx.GetProjectAsync();
 
-            var options = new JsonSerializerOptions
+        }
+
+        public async Task<bool> InsertAnimation(List<MaterialAnimation> animations, int step = 0, float timeAnimation = 0)
+        {
+            // Lấy video animation
+            var videoSegment = Proj.Tracks.FirstOrDefault(track => track.Type == TrackType.Video)?.Segments;
+            if (videoSegment != null && videoSegment?.Count > 0)
             {
-                PropertyNameCaseInsensitive = true // Để tự động map kể cả khi JSON viết kiểu snake_case
-            };
+                // 1. Clear list animation, Clear animation ID in video
+                var animationNeedDelete = new List<MaterialAnimation>(animations);
+                if (Proj.Materials.MaterialAnimations.Count > 0)
+                {
+                    animationNeedDelete.AddRange(Proj.Materials.MaterialAnimations);
+                    Proj.Materials.MaterialAnimations.Clear();
+                }
 
-            project.Materials.MaterialAnimations.RemoveAt(0);
+                foreach (var video in videoSegment)
+                {
+                    foreach (var animation in animationNeedDelete)
+                    {
+                        if (video.ExtraMaterialRefs.Contains(animation.Id))
+                        {
+                            video.ExtraMaterialRefs.Remove(animation.Id);
+                        }
 
-            //var animation = JsonSerializer.Deserialize<MaterialAnimation>(Data.Animations[1], options);
+                    }
+                }
 
-            //if (animation != null)
-            //{
-            //    project.Materials.MaterialAnimations.Add(animation);
-            //}
+                // 2. Thêm các animation vào material
+                // Update thời gian cho từng animation
+                if (timeAnimation > 0)
+                {
+                    animations.ForEach(animation =>
+                    {
+                        if (animation.Animations.Count > 0)
+                        {
+                            animation.Animations[0].Duration = (long)(timeAnimation * 1000000);
+                        }
+                    });
+                }
+                Proj.Materials.MaterialAnimations.AddRange(animations);
 
-            await ctx.SaveChangesAsync();
+                // 3. Chèn Id animation tuần tự vào từng animation, cách nhau theo random
+                int animationCount = Proj.Materials.MaterialAnimations.Count;
+
+                // Chèn animation cách theo random
+                step = step > 0 ? step + 1 : 1;
+
+                int videoIndex = 0;
+                int animationIndex = 0;
+                // 2. Lặp qua list animation và video
+                for (videoIndex = 0, animationIndex = 0; videoIndex < videoSegment.Count; videoIndex += step, animationIndex++)
+                {
+                    if (animationIndex > animations.Count - 1)
+                        animationIndex = 0;
+                    // 3. Thêm ID của animation vào material ref của video
+                    videoSegment[videoIndex].ExtraMaterialRefs.Add(animations[animationIndex].Id);
+
+                }
+            }
+
+            await Ctx.SaveChangesAsync();
             return true;
         }
 
@@ -55,19 +101,19 @@ namespace CapCutTool.Service
         //        materialAnimations?.Clear();
 
         //        List<string> listAnimation = Data.Animations;
-        //        int animationIndex = 0;
-        //        foreach (var segment in segments)
+        //        int videoIndex = 0;
+        //        foreach (var animation in segments)
         //        {
-        //            if (animationIndex == listAnimation.Count) animationIndex = 0;
-        //            while (animationIndex < listAnimation.Count)
+        //            if (videoIndex == listAnimation.Count) videoIndex = 0;
+        //            while (videoIndex < listAnimation.Count)
         //            {
-        //                var newAnimation = JObject.Parse(listAnimation[animationIndex]);
+        //                var newAnimation = JObject.Parse(listAnimation[videoIndex]);
         //                materialAnimations?.Add(newAnimation);
 
-        //                var materialRef = (JArray?)segment.SelectToken("extra_material_refs");
+        //                var materialRef = (JArray?)animation.SelectToken("extra_material_refs");
         //                materialRef?.Add(newAnimation["id"]);
 
-        //                animationIndex++;
+        //                videoIndex++;
         //                break;
         //            }
         //        }
@@ -129,6 +175,22 @@ namespace CapCutTool.Service
             //{
             //    return false;
             //}
+
+        }
+
+        public async Task<bool> GetContext(string projectName = projectName)
+        {
+            try
+            {
+                string jsonFilePath = Path.Combine(projectFilePath, projectName);
+                Ctx = new Context(jsonFilePath);
+                Proj = await Ctx.GetProjectAsync();
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
 
         }
     }

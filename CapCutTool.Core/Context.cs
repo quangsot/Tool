@@ -150,8 +150,15 @@ namespace CapCutTool.Core
                     case JsonValueKind.False:
                     case JsonValueKind.Null:
                     case null:
-                        target[i] = sourceNode?.DeepClone();
-                        break;
+                        if (targetNode != null)
+                        {
+                            target[i] = sourceNode?.DeepClone();
+                        }
+                        else
+                        {
+                            target.Add(sourceNode?.DeepClone());
+                        }
+                            break;
                     default:
                         throw new NotSupportedException();
                 }

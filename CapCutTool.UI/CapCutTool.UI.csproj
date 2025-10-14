@@ -22,6 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\CapCutTool.Core\CapCutTool.Core.csproj" />
     <ProjectReference Include="..\CapCutTool.Service\CapCutTool.Service.csproj" />
   </ItemGroup>
 

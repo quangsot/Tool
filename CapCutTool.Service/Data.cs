@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CapCutTool.Service
 {
-    class Data
+    public class Data
     {
         
         public static List<string> Animations = [SlideUpAnimation, FocusAnimation, BlurInAnimation, RotaryExpanderAnimation, EnergyBoomAnimation];

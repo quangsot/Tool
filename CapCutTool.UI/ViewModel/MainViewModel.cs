@@ -1,6 +1,8 @@
-﻿using CapCutTool.Service;
+﻿using CapCutTool.Core.Model;
+using CapCutTool.Service;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using System.Text.Json;
 using System.Threading.Tasks;
 namespace CapCutTool.UI.ViewModel
 {
@@ -28,7 +30,20 @@ namespace CapCutTool.UI.ViewModel
         [RelayCommand]
         public async Task ClickAnimation()
         {
-            if (await _draftService.InsertAnimation())
+            var animationNeedAdd = new List<Materials.MaterialAnimation>();
+            foreach (var animation in Data.Animations)
+            {
+                var temp = JsonSerializer.Deserialize<Materials.MaterialAnimation>(animation);
+                animationNeedAdd.Add(temp);
+            }
+
+            if(!await _draftService.GetContext("clip_test"))
+            {
+                StatusAnimation = "Chèn Animation Thất Bại";
+                return;
+            }
+
+            if (await _draftService.InsertAnimation(animationNeedAdd, 1, 2))
             {
                 StatusAnimation = "Chèn Animation Thành Công";
             }
