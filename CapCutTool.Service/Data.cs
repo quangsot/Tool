@@ -12,6 +12,8 @@ namespace CapCutTool.Service
         public static List<string> Animations = [SlideUpAnimation, FocusAnimation, BlurInAnimation, RotaryExpanderAnimation, EnergyBoomAnimation];
 
         public static List<string> Effects = [CameraMovementEffect, BlurryFocusEffect, FaultySignalEffect, BlackNoiseEffect, ParticleBlur2Effect];
+        
+        public static List<string> Transitions = [ShakyInhale, BluRayScanning, PullIn, FanOut, DofWiggle];
 
         #region Animation
         private const string SlideUpAnimation = @"{
@@ -400,6 +402,199 @@ namespace CapCutTool.Service
                 ""value"": 1.0,
                 ""version"": """"
             }";
+        #endregion
+
+        #region Transition
+        public const string ShakyInhale = @"{
+  ""category_id"": ""25835"",
+  ""category_name"": ""Trending"",
+  ""duration"": 1000000,
+  ""effect_id"": ""7347695573199229442"",
+  ""id"": ""92019EEE-3225-4d29-99F1-F9DF4C948D4A"",
+  ""is_ai_transition"": false,
+  ""is_overlap"": true,
+  ""name"": ""Shaky Inhale"",
+  ""path"": ""C:/Users/ADMIN/AppData/Local/CapCut/User Data/Cache/effect/7347695573199229442/88939867fef0a71b39f549558d724d31"",
+  ""platform"": ""all"",
+  ""request_id"": ""20250929205555EA0AFEE88A698130A951"",
+  ""resource_id"": ""7347695573199229442"",
+  ""source_platform"": 1,
+  ""task_id"": """",
+  ""third_resource_id"": ""7347695573199229442"",
+  ""type"": ""transition"",
+  ""video_path"": """"
+}";
+        public const string BluRayScanning = @"{
+  ""category_id"": ""25835"",
+  ""category_name"": ""Trending"",
+  ""duration"": 1000000,
+  ""effect_id"": ""7291923867235258882"",
+  ""id"": ""DC555B84-4562-4962-BCB4-AF8FC362F155"",
+  ""is_ai_transition"": false,
+  ""is_overlap"": true,
+  ""name"": ""Blu-ray Scanning"",
+  ""path"": ""C:/Users/ADMIN/AppData/Local/CapCut/User Data/Cache/effect/7291923867235258882/95462badbbb87bd7dc4e1d7b04e58306"",
+  ""platform"": ""all"",
+  ""request_id"": ""20251012174636908CB020564219AF80E2"",
+  ""resource_id"": ""7291923867235258882"",
+  ""source_platform"": 1,
+  ""task_id"": """",
+  ""third_resource_id"": ""7291923867235258882"",
+  ""type"": ""transition"",
+  ""video_path"": """"
+}";
+        public const string PullIn = @"{
+  ""category_id"": ""25835"",
+  ""category_name"": ""Trending"",
+  ""duration"": 466666,
+  ""effect_id"": ""6724226861666144779"",
+  ""id"": ""3468062C-B677-4271-88A1-AD71B626B82A"",
+  ""is_ai_transition"": false,
+  ""is_overlap"": false,
+  ""name"": ""Pull in"",
+  ""path"": ""C:/Users/ADMIN/AppData/Local/CapCut/User Data/Cache/effect/6724226861666144779/4d5a316f2eae582e7d0604b47feb8c32"",
+  ""platform"": ""all"",
+  ""request_id"": ""20250929205555EA0AFEE88A698130A951"",
+  ""resource_id"": ""6724226861666144779"",
+  ""source_platform"": 1,
+  ""task_id"": """",
+  ""third_resource_id"": ""6724226861666144779"",
+  ""type"": ""transition"",
+  ""video_path"": """"
+}";
+        public const string FanOut = @"{
+  ""category_id"": ""25835"",
+  ""category_name"": ""Trending"",
+  ""duration"": 800000,
+  ""effect_id"": ""7362947185249358353"",
+  ""id"": ""76177A24-BB53-4e76-A014-491694D385D2"",
+  ""is_ai_transition"": false,
+  ""is_overlap"": true,
+  ""name"": ""Fan Out"",
+  ""path"": ""C:/Users/ADMIN/AppData/Local/CapCut/User Data/Cache/effect/7362947185249358353/9d6a02b47846369cec6d19a35826570d"",
+  ""platform"": ""all"",
+  ""request_id"": ""20251012174636908CB020564219AF80E2"",
+  ""resource_id"": ""7362947185249358353"",
+  ""source_platform"": 1,
+  ""task_id"": """",
+  ""third_resource_id"": ""7362947185249358353"",
+  ""type"": ""transition"",
+  ""video_path"": """"
+}";
+        public const string DofWiggle = @"{
+  ""category_id"": ""25835"",
+  ""category_name"": ""Trending"",
+  ""duration"": 1000000,
+  ""effect_id"": ""7539761251644214529"",
+  ""id"": ""17FA0FA7-1EE1-4c4d-9213-34494C15DF42"",
+  ""is_ai_transition"": false,
+  ""is_overlap"": true,
+  ""name"": ""DOF Wiggle"",
+  ""path"": ""C:/Users/ADMIN/AppData/Local/CapCut/User Data/Cache/effect/7539761251644214529/86ed3cc5088373f6a60dc19914d77cee"",
+  ""platform"": ""all"",
+  ""request_id"": ""20251012174636908CB020564219AF80E2"",
+  ""resource_id"": ""7539761251644214529"",
+  ""source_platform"": 1,
+  ""task_id"": """",
+  ""third_resource_id"": ""0"",
+  ""type"": ""transition"",
+  ""video_path"": """"
+}";
+        public const string ClapPull = @"{
+  ""category_id"": ""25835"",
+  ""category_name"": ""Trending"",
+  ""duration"": 2000000,
+  ""effect_id"": ""7537227214035619088"",
+  ""id"": ""D2BC29FB-269D-4d5a-9277-997B29BB4CA4"",
+  ""is_ai_transition"": false,
+  ""is_overlap"": true,
+  ""name"": ""Clap & Pull"",
+  ""path"": ""C:/Users/ADMIN/AppData/Local/CapCut/User Data/Cache/effect/7537227214035619088/7663f5323a087041ff933ef43e71979e"",
+  ""platform"": ""all"",
+  ""request_id"": ""20251012174636908CB020564219AF80E2"",
+  ""resource_id"": ""7537227214035619088"",
+  ""source_platform"": 1,
+  ""task_id"": """",
+  ""third_resource_id"": ""0"",
+  ""type"": ""transition"",
+  ""video_path"": """"
+}";
+        public const string Blink = @"{
+  ""category_id"": ""25835"",
+  ""category_name"": ""Trending"",
+  ""duration"": 466666,
+  ""effect_id"": ""6864867302936941064"",
+  ""id"": ""C6F80729-12C5-47c4-B735-6EE79CCD4CCE"",
+  ""is_ai_transition"": false,
+  ""is_overlap"": false,
+  ""name"": ""Blink"",
+  ""path"": ""C:/Users/ADMIN/AppData/Local/CapCut/User Data/Cache/effect/6864867302936941064/bf695506c8091f7a01ee7b1323a4d601"",
+  ""platform"": ""all"",
+  ""request_id"": ""20251012174636908CB020564219AF80E2"",
+  ""resource_id"": ""6864867302936941064"",
+  ""source_platform"": 1,
+  ""task_id"": """",
+  ""third_resource_id"": ""6864867302936941064"",
+  ""type"": ""transition"",
+  ""video_path"": """"
+}";
+        public const string BubbleBlur = @"{
+  ""category_id"": ""25835"",
+  ""category_name"": ""Trending"",
+  ""duration"": 1000000,
+  ""effect_id"": ""7159450506648097281"",
+  ""id"": ""70B14934-1B4D-4fc8-B967-ED100502487E"",
+  ""is_ai_transition"": false,
+  ""is_overlap"": true,
+  ""name"": ""Bubble Blur"",
+  ""path"": ""C:/Users/ADMIN/AppData/Local/CapCut/User Data/Cache/effect/7159450506648097281/10478b300821fa6eccadf67b07b63208"",
+  ""platform"": ""all"",
+  ""request_id"": ""20250929205555EA0AFEE88A698130A951"",
+  ""resource_id"": ""7159450506648097281"",
+  ""source_platform"": 1,
+  ""task_id"": """",
+  ""third_resource_id"": ""7159450506648097281"",
+  ""type"": ""transition"",
+  ""video_path"": """"
+}";
+        public const string GhostGlow = @"{
+  ""category_id"": ""25835"",
+  ""category_name"": ""Trending"",
+  ""duration"": 1000000,
+  ""effect_id"": ""7496023270265834768"",
+  ""id"": ""EDED8D18-7E55-4149-862A-2186D78F3E69"",
+  ""is_ai_transition"": false,
+  ""is_overlap"": true,
+  ""name"": ""Ghost Glow"",
+  ""path"": ""C:/Users/ADMIN/AppData/Local/CapCut/User Data/Cache/effect/7496023270265834768/845c0cc95a0bf15e542cd3d7696d6deb"",
+  ""platform"": ""all"",
+  ""request_id"": ""20251012174636908CB020564219AF80E2"",
+  ""resource_id"": ""7496023270265834768"",
+  ""source_platform"": 1,
+  ""task_id"": """",
+  ""third_resource_id"": ""0"",
+  ""type"": ""transition"",
+  ""video_path"": """"
+}";
+        public const string SpinCounterClockwise = @"{
+  ""category_id"": ""25835"",
+  ""category_name"": ""Trending"",
+  ""duration"": 466666,
+  ""effect_id"": ""6724226603372515853"",
+  ""id"": ""20B457ED-EF36-4010-8D8A-BF5158512268"",
+  ""is_ai_transition"": false,
+  ""is_overlap"": false,
+  ""name"": ""Spin Counter-clockwise"",
+  ""path"": ""C:/Users/ADMIN/AppData/Local/CapCut/User Data/Cache/effect/6724226603372515853/a88b779d96204dc15634c0b9f0e60ee0"",
+  ""platform"": ""all"",
+  ""request_id"": ""20250929205555EA0AFEE88A698130A951"",
+  ""resource_id"": ""6724226603372515853"",
+  ""source_platform"": 1,
+  ""task_id"": """",
+  ""third_resource_id"": ""6724226603372515853"",
+  ""type"": ""transition"",
+  ""video_path"": """"
+}";
         #endregion
     }
 }

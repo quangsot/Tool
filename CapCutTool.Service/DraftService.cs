@@ -6,6 +6,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using static CapCutTool.Core.Model.Materials;
+using static CapCutTool.Core.Model.Materials.MaterialAnimation;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace CapCutTool.Service
@@ -14,7 +15,9 @@ namespace CapCutTool.Service
     {
         Task<bool> GetContext(string projectName);
         Task<bool> InsertAnimation(List<MaterialAnimation> animations, int randomNum, float timeAnimation);
-        Task<bool> InsertEffect();
+        Task<bool> InsertEffect(List<VideoEffect> videoEffects, int timeEffect = 100, bool isInsertToImageAndVideo = false);
+        Task<bool> InsertTransition(List<Transition> transitions, double time = 1);
+
     }
     public class DraftService : IDraftService
     {
@@ -90,92 +93,95 @@ namespace CapCutTool.Service
             return true;
         }
 
-        //public async Task<bool> InsertAnimation()
-        //{
-        //    try
-        //    {
-        //        var root = await CommonUtil.GetJsonContent(projectName);
-
-        //        var segments = (JArray?)root.SelectToken("tracks[0].segments") ?? [];
-        //        var materialAnimations = (JArray?)root.SelectToken("materials.material_animations");
-        //        materialAnimations?.Clear();
-
-        //        List<string> listAnimation = Data.Animations;
-        //        int videoIndex = 0;
-        //        foreach (var animation in segments)
-        //        {
-        //            if (videoIndex == listAnimation.Count) videoIndex = 0;
-        //            while (videoIndex < listAnimation.Count)
-        //            {
-        //                var newAnimation = JObject.Parse(listAnimation[videoIndex]);
-        //                materialAnimations?.Add(newAnimation);
-
-        //                var materialRef = (JArray?)animation.SelectToken("extra_material_refs");
-        //                materialRef?.Add(newAnimation["id"]);
-
-        //                videoIndex++;
-        //                break;
-        //            }
-        //        }
-
-        //        CommonUtil.SaveJsonContent(root, projectName);
-        //        return true;
-
-        //    }
-        //    catch (Exception)
-        //    {
-        //        return false;
-        //    }
-
-        //}
-
-        public async Task<bool> InsertEffect()
+        /// <summary>
+        /// Chèn transition vào video
+        /// </summary>
+        /// <param name="videoEffects"></param>
+        /// <param name="timeEffect"></param> đơn vị tính phần trăm (%)
+        /// <param name="isInsertToImageAndVideo"></param>
+        /// <returns></returns>
+        public async Task<bool> InsertEffect(List<VideoEffect> videoEffects, int timeEffect = 100, bool isInsertToImageAndVideo = false)
         {
-            return await Task.FromResult(true);
-            //try
-            //{
-            //    var root = await CommonUtil.GetJsonContent(projectName);
+            var videoSegment = Proj.Tracks.FirstOrDefault(track => track.Type == TrackType.Video)?.Segments;
+            if (videoSegment != null && videoSegment.Count > 0)
+            {
+                // 1. Xóa transition trong list video
+                var effectMaterialsId = Proj.Materials.VideoEffects.Select(effect => effect.Id).Distinct().ToList();
+                if (effectMaterialsId.Count > 0)
+                {
+                    // Clear transition ID in videeo
+                    foreach (var video in videoSegment)
+                    {
+                        foreach (var id in effectMaterialsId)
+                        {
+                            video.ExtraMaterialRefs.Remove(id);
+                        }
+                    }
+                }
 
-            //    // 1.Clear Effects list
-            //    CommonUtil.ClearEffectList(root);
+                // 2. Xóa transition trong transition track
+                var effectSegment = Proj.Tracks.FirstOrDefault(track => track.Type == TrackType.Effect)?.Segments;
+                effectSegment?.Clear();
 
-            //    // 2. Create Effects Segment
-            //    var effects = Data.Effects;
+                // 3. Xóa transition trong material
+                Proj.Materials.VideoEffects.Clear();
 
-            //    // add effect to material
-            //    CommonUtil.AddEffectToMaterial(root, effects);
+                // 4. Nếu áp dụng transition cho ảnh và video
+                if (isInsertToImageAndVideo)
+                {
+                    // Chèn tuần tự từng transition vào material và ảnh, video tương ứng
+                    int videoIndex = 0;
+                    int effectIndex = 0;
+                    // Lặp qua list transition và video
+                    for (videoIndex = 0, effectIndex = 0; videoIndex < videoSegment.Count; videoIndex++, effectIndex++)
+                    {
+                        if (effectIndex > videoEffects.Count - 1)
+                            effectIndex = 0;
 
-            //    // Get list video
-            //    var videos = CommonUtil.GetVideoSegments(root);
+                        var effect = videoEffects[effectIndex].DeepCopy();
+                        effect.Id = Guid.NewGuid();
 
-            //    foreach (var video in videos)
-            //    {
-            //        // create effect
-            //        var effectSegment = new EffectSegment()
-            //        {
-            //            Target = new TimeRange()
-            //            {
-            //                Start = video.Target.Start
-            //            }
-            //        };
+                        // Thêm vào material
+                        Proj.Materials.VideoEffects.Add(effect);
 
-            //        int effectIndex = videos.IndexOf(video) % effects.Count;
-            //        var effectSegmentObject = effectSegment.GenerateEffect(effects[effectIndex]);
+                        // Thêm Id transition vào material của video
+                        videoSegment[videoIndex].ExtraMaterialRefs.Add(effect.Id);
+                    }
+                }
+                // 5. Ngược lại
+                else
+                {
+                    // Chèn transition đầu tiên vào trong material
+                    var effect = videoEffects.First().DeepCopy();
+                    Proj.Materials.VideoEffects.Add(videoEffects.First());
 
-            //        // add effectSegment to track effect
-            //        CommonUtil.AddEffectToSegment(root, effectSegmentObject);
-            //    }
+                    // Effect start từ đầu video và thời gian của transition phục thuộc vào "Thời gian(%)" áp dụng cho video
+                    var targetTimeRangeEffect = new TimeRange()
+                    {
+                        Duration = (Proj.Duration * timeEffect) / 100,
+                        Start = 0
+                    };
 
-            //    // 3. Save
-            //    CommonUtil.SaveJsonContent(root, projectName);
-
-            //    return true;
-            //}
-            //catch (Exception)
-            //{
-            //    return false;
-            //}
-
+                    var effectTrack = Proj.Tracks.FirstOrDefault(track => track.Type == TrackType.Effect);
+                    var effectSegmentNeedAdd = Track.Segment.CreateEffectSegment(Guid.NewGuid(), effect.Id, targetTimeRangeEffect);
+                    if (effectTrack == null)
+                    {
+                        // Chèn transition segment vào track
+                        Proj.Tracks.Add(new()
+                        {
+                            Id = new(),
+                            Type = TrackType.Effect,
+                            Segments = [effectSegmentNeedAdd]
+                        });
+                    }
+                    else
+                    {
+                        effectTrack.Segments.Add(effectSegmentNeedAdd);
+                    }
+                }
+            }
+            await Ctx.SaveChangesAsync();
+            return true;
         }
 
         public async Task<bool> GetContext(string projectName = projectName)
@@ -192,6 +198,53 @@ namespace CapCutTool.Service
                 return false;
             }
 
+        }
+
+        public async Task<bool> InsertTransition(List<Transition> transitions, double time = 0.8)
+        {
+            var videoSegment = Proj.Tracks.FirstOrDefault(track => track.Type == TrackType.Video)?.Segments;
+            if (videoSegment != null && videoSegment.Count > 0)
+            {
+                // 1. Xóa transition trong video segment
+                var transitionMaterialsId = Proj.Materials.Transitions.Select(tras => tras.Id).Distinct().ToList();
+                if (transitionMaterialsId.Count > 0)
+                {
+                    // Clear transition ID in video
+                    foreach (var video in videoSegment)
+                    {
+                        foreach (var id in transitionMaterialsId)
+                        {
+                            video.ExtraMaterialRefs.Remove(id);
+                        }
+                    }
+                }
+
+                // 2. Xóa transition trong material
+                Proj.Materials.Transitions.Clear();
+
+                // 3. Thêm tuần tự transition vào video và material
+                int videoIndex = 0;
+                int transitionIndex = 0;
+                // Lặp qua list transition và video
+                for (videoIndex = 0, transitionIndex = 0; videoIndex < videoSegment.Count; videoIndex++, transitionIndex++)
+                {
+                    if (transitionIndex > transitions.Count - 1)
+                        transitionIndex = 0;
+
+                    var transition = transitions[transitionIndex].DeepCopy();
+                    transition.Id = Guid.NewGuid();
+                    transition.Duration = time * 1000000;
+
+                    // Thêm vào material
+                    Proj.Materials.Transitions.Add(transition);
+
+                    // Thêm Id transition vào material của video
+                    videoSegment[videoIndex].ExtraMaterialRefs.Add(transition.Id);
+                }
+                await Ctx.SaveChangesAsync();
+                return true;
+            }
+            return false;
         }
     }
 }

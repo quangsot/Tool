@@ -15,7 +15,11 @@ namespace CapCutTool.Core.Model
 
         public List<MaterialAnimation> MaterialAnimations { get; set; } = [];
 
+        public List<VideoEffect> VideoEffects { get; set; } = [];
+
         public List<Video> Videos { get; set; }
+
+        public List<Transition> Transitions { get; set; }
 
         public class MaterialAnimation : Base
         {
@@ -32,7 +36,6 @@ namespace CapCutTool.Core.Model
 
             [JsonPropertyName("type")]
             public string Type { get; set; }
-
 
             public class Animation
             {
@@ -85,6 +88,99 @@ namespace CapCutTool.Core.Model
                 public string Type { get; set; }
             }
         }
+
+        public class VideoEffect : ICloneable<VideoEffect>
+        {
+            public object? AdjustParams { get; set; }
+
+            public string AlgorithmArtifactPath { get; set; } = string.Empty;
+
+            public int ApplyTargetType { get; set; }
+
+            public object? ApplyTimeRange { get; set; }
+
+            public string CategoryId { get; set; } = string.Empty;
+
+            public string CategoryName { get; set; } = string.Empty;
+
+            public object? BindSegmentId { get; set; }
+
+            public object? TransparentParams { get; set; }
+
+            public object? CommonKeyframes { get; set; }
+
+            public int CoveringRelationChange { get; set; }
+
+            public object? DisableEffectFaces { get; set; }
+
+            public string EffectId { get; set; } = string.Empty;
+
+            public object? EffectMask { get; set; }
+
+            public bool EnableMask { get; set; }
+
+            public object? FormulaId { get; set; }
+
+            public Guid Id { get; set; }
+
+            public int ItemEffectType { get; set; }
+
+            public string Name { get; set; } = string.Empty;
+
+            public string Path { get; set; } = string.Empty;
+
+            public string Platform { get; set; } = string.Empty;
+
+            public int RenderIndex { get; set; }
+
+            public string RequestId { get; set; } = string.Empty;
+
+            public string ResourceId { get; set; } = string.Empty;
+
+            public int SourcePlatform { get; set; }
+
+            public object? TimeRange { get; set; }
+
+            public int TrackRenderIndex { get; set; }
+
+            public string Type { get; set; } = string.Empty;
+
+            public double Value { get; set; }
+
+            public object? Version { get; set; }
+
+            public VideoEffect DeepCopy()
+            {
+                return this.MemberwiseClone() as VideoEffect ?? new();
+            }
+        }
+
+        public class Transition : ICloneable<Transition>
+        {
+            public string CategoryId { get; set; } = string.Empty;
+            public string CategoryName { get; set; } = string.Empty;
+            public double Duration { get; set; }
+            public string EffectId { get; set; } = string.Empty;
+            public Guid Id { get; set; }
+            public bool IsAiTransition { get; set; }
+            public bool IsOverlap { get; set; }
+            public string Name { get; set; } = string.Empty;
+            public string Path { get; set; } = string.Empty;
+            public string Platform { get; set; } = string.Empty;
+            public string RequestId { get; set; } = string.Empty;
+            public string ResourceId { get; set; } = string.Empty;
+            public int SourcePlatform { get; set; }
+            public string TaskId { get; set; } = string.Empty;
+            public string ThirdResourceId { get; set; } = string.Empty;
+            public string Type { get; set; } = string.Empty;
+            public string VideoPath { get; set; } = string.Empty;
+
+            public Transition DeepCopy()
+            {
+                return this.MemberwiseClone() as Transition ?? new();
+            }
+        }
+
 
         public class Video : Material
         {

@@ -9,5 +9,6 @@ namespace CapCutTool.Service
     public class TrackType
     {
         public const string Video = "video";
+        public const string Effect = "effect";
     }
 }
