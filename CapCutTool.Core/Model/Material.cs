@@ -192,11 +192,10 @@ namespace CapCutTool.Core.Model
             [JsonInclude]
             public string Path { get; private set; }
 
-            public void ChangePath(string path)
-            {
-                Path = path;
-                MaterialName = System.IO.Path.GetFileName(Path);
-            }
+            public string Type { get; set; }
+
+            public long Duration { get; set; }
+
         }
 
         //public abstract class ConstantMaterial : Material, ICloneable<ConstantMaterial>

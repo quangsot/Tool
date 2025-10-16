@@ -6,9 +6,11 @@ using System.Threading.Tasks;
 
 namespace CapCutTool.Service
 {
-    public class TrackType
+    public class MediaType
     {
         public const string Video = "video";
         public const string Effect = "effect";
+        public const string Audio = "audio";
+        public const string Photo = "photo";
     }
 }

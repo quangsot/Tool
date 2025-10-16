@@ -17,6 +17,7 @@ namespace CapCutTool.Service
         Task<bool> InsertAnimation(List<MaterialAnimation> animations, int randomNum, float timeAnimation);
         Task<bool> InsertEffect(List<VideoEffect> videoEffects, int timeEffect = 100, bool isInsertToImageAndVideo = false);
         Task<bool> InsertTransition(List<Transition> transitions, double time = 1);
+        Task<bool> SyncVoid();
 
     }
     public class DraftService : IDraftService
@@ -33,7 +34,7 @@ namespace CapCutTool.Service
         public async Task<bool> InsertAnimation(List<MaterialAnimation> animations, int step = 0, float timeAnimation = 0)
         {
             // Lấy video animation
-            var videoSegment = Proj.Tracks.FirstOrDefault(track => track.Type == TrackType.Video)?.Segments;
+            var videoSegment = Proj.Tracks.FirstOrDefault(track => track.Type == MediaType.Video)?.Segments;
             if (videoSegment != null && videoSegment?.Count > 0)
             {
                 // 1. Clear list animation, Clear animation ID in video
@@ -102,7 +103,7 @@ namespace CapCutTool.Service
         /// <returns></returns>
         public async Task<bool> InsertEffect(List<VideoEffect> videoEffects, int timeEffect = 100, bool isInsertToImageAndVideo = false)
         {
-            var videoSegment = Proj.Tracks.FirstOrDefault(track => track.Type == TrackType.Video)?.Segments;
+            var videoSegment = Proj.Tracks.FirstOrDefault(track => track.Type == MediaType.Video)?.Segments;
             if (videoSegment != null && videoSegment.Count > 0)
             {
                 // 1. Xóa transition trong list video
@@ -120,7 +121,7 @@ namespace CapCutTool.Service
                 }
 
                 // 2. Xóa transition trong transition track
-                var effectSegment = Proj.Tracks.FirstOrDefault(track => track.Type == TrackType.Effect)?.Segments;
+                var effectSegment = Proj.Tracks.FirstOrDefault(track => track.Type == MediaType.Effect)?.Segments;
                 effectSegment?.Clear();
 
                 // 3. Xóa transition trong material
@@ -162,7 +163,7 @@ namespace CapCutTool.Service
                         Start = 0
                     };
 
-                    var effectTrack = Proj.Tracks.FirstOrDefault(track => track.Type == TrackType.Effect);
+                    var effectTrack = Proj.Tracks.FirstOrDefault(track => track.Type == MediaType.Effect);
                     var effectSegmentNeedAdd = Track.Segment.CreateEffectSegment(Guid.NewGuid(), effect.Id, targetTimeRangeEffect);
                     if (effectTrack == null)
                     {
@@ -170,7 +171,7 @@ namespace CapCutTool.Service
                         Proj.Tracks.Add(new()
                         {
                             Id = new(),
-                            Type = TrackType.Effect,
+                            Type = MediaType.Effect,
                             Segments = [effectSegmentNeedAdd]
                         });
                     }
@@ -202,7 +203,7 @@ namespace CapCutTool.Service
 
         public async Task<bool> InsertTransition(List<Transition> transitions, double time = 0.8)
         {
-            var videoSegment = Proj.Tracks.FirstOrDefault(track => track.Type == TrackType.Video)?.Segments;
+            var videoSegment = Proj.Tracks.FirstOrDefault(track => track.Type == MediaType.Video)?.Segments;
             if (videoSegment != null && videoSegment.Count > 0)
             {
                 // 1. Xóa transition trong video segment
@@ -240,6 +241,69 @@ namespace CapCutTool.Service
 
                     // Thêm Id transition vào material của video
                     videoSegment[videoIndex].ExtraMaterialRefs.Add(transition.Id);
+                }
+                await Ctx.SaveChangesAsync();
+                return true;
+            }
+            return false;
+        }
+
+        public async Task<bool> SyncVoid()
+        {
+            var videoSegment = Proj.Tracks.FirstOrDefault(track => track.Type == MediaType.Video)?.Segments;
+            var audioSegment = Proj.Tracks.First(t => t.Type == MediaType.Audio).Segments;
+            if ((videoSegment != null && videoSegment.Count > 0) && (audioSegment != null && audioSegment.Count > 0))
+            {
+                long timePoint = 0;
+                var numOfSegment = Math.Min(videoSegment.Count, audioSegment.Count);
+                var typeOfVideo = string.Empty;
+                int index = 0;
+
+                for (index = 0; index < numOfSegment; index++)
+                {
+                    var materialVideo = Proj.Materials.Videos.Single(v => v.Id == videoSegment[index].MaterialId);
+                    if (materialVideo != null)
+                    {
+                        typeOfVideo = materialVideo?.Type;
+
+                        if (typeOfVideo == MediaType.Photo)
+                        {
+                            // lấy thời gian của audio
+                            var audioTime = audioSegment[index].SourceTimerange?.Duration ?? 0;
+
+                            // đồng nhất thời gian duration
+                            // gán thời gian của material video = thời gian của audio
+                            materialVideo.Duration = audioTime;
+
+                            // gán thời gian source của segment video = thời gian của audio
+                            videoSegment[index].SourceTimerange.Duration = audioTime;
+
+                            // gán thời gian target của segment video =  thời gian của audio
+                            videoSegment[index].TargetTimerange.Duration = audioTime;
+
+                            // đồng nhất thời điểm start
+                            // Gán thời gian bắt đầu bằng videoTimePoint
+                            videoSegment[index].TargetTimerange.Start = timePoint;
+                            audioSegment[index].TargetTimerange.Start = timePoint;
+
+                            // Cộng dồn thời gian của video với videoTimePoint
+                            timePoint += audioTime;
+                        }
+                        else if (typeOfVideo == MediaType.Video)
+                        {
+                            // lấy time của audio và video
+                            var videoTime = videoSegment[index].TargetTimerange?.Duration ?? 0;
+                            var audioTime = audioSegment[index].SourceTimerange?.Duration ?? 0;
+
+                            // đồng nhất thời điểm start
+                            videoSegment[index].TargetTimerange.Start = timePoint;
+                            audioSegment[index].TargetTimerange.Start = timePoint;
+
+                            // cộng dồn thời gian của video vào video TimePoint
+                            var startNextTime = Math.Max(audioTime, videoTime);
+                            timePoint += startNextTime;
+                        }
+                    }
                 }
                 await Ctx.SaveChangesAsync();
                 return true;

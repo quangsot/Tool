@@ -117,8 +117,14 @@ namespace CapCutTool.UI.ViewModel
         }
 
         [RelayCommand]
-        public void ClickSyncVoid()
+        public async Task ClickSyncVoid()
         {
+            if (!await _draftService.GetContext("clip_test"))
+            {
+                StatusTransition = "Đồng Bộ Âm Thanh Thất Bại";
+                return;
+            }
+            await _draftService.SyncVoid();
             StatusSyncVoice = "Đồng Bộ Âm Thanh Thành Công";
         }
     }
