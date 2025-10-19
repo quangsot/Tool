@@ -1,5 +1,7 @@
 ﻿using CapCutTool.Core;
 using CapCutTool.Core.Model;
+using CapCutTool.Service.Interface;
+using CapCutTool.Service.Service;
 using Newtonsoft.Json.Linq;
 using System.Net.WebSockets;
 using System.Text.Json;
@@ -11,25 +13,21 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace CapCutTool.Service
 {
-    public interface IDraftService
+    public interface IDraftService : IBaseService
     {
-        Task<bool> GetContext(string projectName);
+        //Task<bool> GetContext(string projectName);
         Task<bool> InsertAnimation(List<MaterialAnimation> animations, int randomNum, float timeAnimation);
         Task<bool> InsertEffect(List<VideoEffect> videoEffects, int timeEffect = 100, bool isInsertToImageAndVideo = false);
         Task<bool> InsertTransition(List<Transition> transitions, double time = 1);
         Task<bool> SyncVoid();
 
     }
-    public class DraftService : IDraftService
+    public class DraftService(Context ctx, Config configs) : BaseService(ctx, configs), IDraftService
     {
         const string projectName = "clip_test";
         const string projectFilePath = "C:\\Users\\ADMIN\\AppData\\Local\\CapCut\\User Data\\Projects\\com.lveditor.draft\\";
         public Context Ctx { get; private set; }
         public Project Proj { get; private set; }
-        public DraftService()
-        {
-
-        }
 
         public async Task<bool> InsertAnimation(List<MaterialAnimation> animations, int step = 0, float timeAnimation = 0)
         {
@@ -185,21 +183,21 @@ namespace CapCutTool.Service
             return true;
         }
 
-        public async Task<bool> GetContext(string projectName = projectName)
-        {
-            try
-            {
-                string jsonFilePath = Path.Combine(projectFilePath, projectName);
-                Ctx = new Context(jsonFilePath);
-                Proj = await Ctx.GetProjectAsync();
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
+        //public async Task<bool> GetContext(string projectName = projectName)
+        //{
+        //    try
+        //    {
+        //        string jsonFilePath = Path.Combine(projectFilePath, projectName);
+        //        Ctx = new Context(jsonFilePath);
+        //        Proj = await Ctx.GetProjectAsync();
+        //        return true;
+        //    }
+        //    catch (Exception)
+        //    {
+        //        return false;
+        //    }
 
-        }
+        //}
 
         public async Task<bool> InsertTransition(List<Transition> transitions, double time = 0.8)
         {

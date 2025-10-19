@@ -1,6 +1,7 @@
 ﻿using CapCutTool.Core.Json;
 using CapCutTool.Core.Model;
 using CapCutTool.Service;
+using CapCutTool.Service.Interface;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Text.Json;
@@ -10,6 +11,10 @@ namespace CapCutTool.UI.ViewModel
     public partial class MainViewModel : ObservableObject
     {
         private readonly IDraftService _draftService;
+        private readonly IAnimationService _animationService;
+        private readonly IEffectService _effectService;
+        private readonly ITransitionService _transitionService;
+        private readonly IVoiceService _voiceService;
 
         [ObservableProperty]
         private string statusAnimation = string.Empty;
@@ -23,9 +28,13 @@ namespace CapCutTool.UI.ViewModel
         [ObservableProperty]
         private string statusSyncVoice = string.Empty;
 
-        public MainViewModel(IDraftService draftService)
+        public MainViewModel(IDraftService draftService, IAnimationService animationService, IEffectService effectService, ITransitionService transitionService, IVoiceService voiceService)
         {
             _draftService = draftService;
+            _animationService = animationService;
+            _effectService = effectService;
+            _transitionService = transitionService;
+            _voiceService = voiceService;
         }
 
         [RelayCommand]
@@ -38,13 +47,13 @@ namespace CapCutTool.UI.ViewModel
                 animationNeedAdd.Add(temp);
             }
 
-            if (!await _draftService.GetContext("clip_test"))
+            if (!await _animationService.GetProject())
             {
                 StatusAnimation = "Chèn Animation Thất Bại";
                 return;
             }
 
-            if (await _draftService.InsertAnimation(animationNeedAdd, 1, 2))
+            if (await _animationService.InsertAnimation(animationNeedAdd, 1, 2))
             {
                 StatusAnimation = "Chèn Animation Thành Công";
             }
@@ -69,13 +78,13 @@ namespace CapCutTool.UI.ViewModel
                 effectNeedAdd.Add(temp);
             }
 
-            if (!await _draftService.GetContext("clip_test"))
+            if (!await _effectService.GetProject())
             {
                 StatusEffect = "Chèn Effect Thất Bại";
                 return;
             }
 
-            if (await _draftService.InsertEffect(effectNeedAdd, 40, true))
+            if (await _effectService.InsertEffect(effectNeedAdd, 40, true))
             {
                 StatusEffect = "Chèn Effect Thành Công";
             }
@@ -100,13 +109,13 @@ namespace CapCutTool.UI.ViewModel
                 transitionNeedAdd.Add(temp);
             }
 
-            if (!await _draftService.GetContext("clip_test"))
+            if (!await _transitionService.GetProject())
             {
                 StatusTransition = "Chèn Transition Thất Bại";
                 return;
             }
 
-            if (await _draftService.InsertTransition(transitionNeedAdd))
+            if (await _transitionService.InsertTransition(transitionNeedAdd))
             {
                 StatusTransition = "Chèn Transition Thành Công";
             }
@@ -119,12 +128,12 @@ namespace CapCutTool.UI.ViewModel
         [RelayCommand]
         public async Task ClickSyncVoid()
         {
-            if (!await _draftService.GetContext("clip_test"))
+            if (!await _voiceService.GetProject())
             {
                 StatusTransition = "Đồng Bộ Âm Thanh Thất Bại";
                 return;
             }
-            await _draftService.SyncVoid();
+            await _voiceService.SyncVoid();
             StatusSyncVoice = "Đồng Bộ Âm Thanh Thành Công";
         }
     }

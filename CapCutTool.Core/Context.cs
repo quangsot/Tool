@@ -5,9 +5,9 @@ using CapCutTool.Core.Model;
 
 namespace CapCutTool.Core
 {
-    public class Context(string folder)
+    public class Context(Config config)
     {
-        const string projectFile = "draft_content.json";
+        private readonly Config _configs = config;
 
         public static readonly JsonSerializerOptions jsonSerializerOptions = new JsonSerializerOptions
         {
@@ -15,8 +15,7 @@ namespace CapCutTool.Core
             Converters = { new PropperCaseGuidJsonConverter() }
         };
         private Project? Project;
-
-        FileInfo ProjectFileInfo => new(Path.Combine(folder, projectFile));
+        FileInfo ProjectFileInfo => new(Path.Combine(_configs.ProjectFilePath, _configs.CurentProject, _configs.ProjectFile));
 
         public async ValueTask<Project> GetProjectAsync()
         {
@@ -37,9 +36,10 @@ namespace CapCutTool.Core
             }
             Update(thisNode.AsObject(), fileJson.AsObject());
 
+            var folder = Path.Combine(_configs.ProjectFilePath, _configs.CurentProject);
             var newFolder = $"{folder} {DateTime.UtcNow.Ticks}";
             Microsoft.VisualBasic.FileIO.FileSystem.CopyDirectory(folder, newFolder);
-            var target = Path.Combine(newFolder, projectFile);
+            var target = Path.Combine(newFolder, _configs.ProjectFile);
             await System.IO.File.WriteAllTextAsync(target, fileJson.ToJsonString());
 
             /* //CapCut discovers new projects by folder on it's own, so we don't need to update root_meta_info.json
